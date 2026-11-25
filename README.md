@@ -2,7 +2,9 @@
 
 Drop in a government RFP PDF and get a bid / no-bid decision in under a minute. Each date, requirement and fine-print trap links to the page it came from, and the agent checks those quotes against the PDF text.
 
-**Live:** `<add your Vercel URL here>`  ·  **API:** `POST /api/analyze`
+**Live:** https://bidscope-rfp-triage-agent.vercel.app  ·  **Repo:** https://github.com/aliasad04/bidscope-rfp-triage-agent  ·  **API:** `POST /api/analyze`
+
+Try it: open the live link and click one of the two sample RFP cards, or drop in your own PDF.
 
 | | |
 |---|---|
@@ -41,8 +43,8 @@ The same data is available as JSON in the UI (copy or download) and from the API
 ```
 
 ```bash
-curl -F file=@rfp.pdf https://<host>/api/analyze            # plain JSON report
-curl -N -F file=@rfp.pdf "https://<host>/api/analyze?stream=1" # NDJSON progress events + report
+curl -F file=@rfp.pdf https://bidscope-rfp-triage-agent.vercel.app/api/analyze              # plain JSON report
+curl -N -F file=@rfp.pdf "https://bidscope-rfp-triage-agent.vercel.app/api/analyze?stream=1" # NDJSON progress + report
 ```
 
 ## Bonus feature: the Bid Action Kit
@@ -121,7 +123,7 @@ The live eval checks the expected decision, score range, every key date (includi
 ## Deploy (free)
 
 1. Push this folder to a GitHub repo, then on vercel.com choose **Add New → Project** and import it. Or run `npx vercel` from this folder.
-2. Add the environment variable `GEMINI_API_KEY`, then deploy.
+2. Add the environment variables `GEMINI_API_KEY` and (optional backup) `OPENROUTER_API_KEY`, then deploy.
 
 ## Project layout
 
