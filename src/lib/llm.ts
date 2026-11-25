@@ -10,7 +10,8 @@ import { geminiJson, type JsonCallOptions, type JsonCallResult } from "./gemini"
  * LLM_PROVIDER=openrouter|mistral skips Gemini entirely (handy for testing).
  */
 
-const BACKUP_RESERVE_MS = 45_000;
+// The free backup model needs ~45-60s for a full RFP; keep enough time for it plus one retry.
+const BACKUP_RESERVE_MS = 120_000;
 
 export async function generateJson(opts: JsonCallOptions): Promise<JsonCallResult> {
   const backup = opts.kind === "analysis" ? backupProvider() : null;

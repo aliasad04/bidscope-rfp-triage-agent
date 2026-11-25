@@ -15,6 +15,8 @@ const DEFAULT_CHAIN = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.8-flash
 // Lite models only: the optional quick screen must never spend the main models' per-minute quota.
 const SCREEN_CHAIN = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
 
+const PER_CALL_MS = 60_000;
+
 // LOW halves latency on the sample RFPs (~60s -> ~30s) with the same eval results.
 const THINKING_LEVEL = (process.env.GEMINI_THINKING_LEVEL?.toUpperCase() || ThinkingLevel.LOW) as ThinkingLevel;
 
@@ -130,7 +132,8 @@ export async function geminiJson(opts: JsonCallOptions): Promise<JsonCallResult>
       const remaining = deadline - Date.now();
       if (remaining < 3000) throw failure();
       try {
-        return await callOnce(model, opts, remaining, schemaInPrompt);
+        // Cap each attempt: an overloaded model can hang instead of failing fast.
+        return await callOnce(model, opts, Math.min(remaining, PER_CALL_MS), schemaInPrompt);
       } catch (err) {
         remember(err);
         if (!schemaInPrompt && isSchemaRejection(err)) {
@@ -156,8 +159,9 @@ export async function geminiJson(opts: JsonCallOptions): Promise<JsonCallResult>
     const result = await tryModel(model);
     if (result) return result;
   }
-  // Every known model failed with a retryable error: ask the API what exists now (main analysis only).
-  if (opts.kind === "screen") throw failure();
+  // Discovery only helps when the known models no longer exist (every failure was a 404).
+  // If they are overloaded or over quota, other Gemini models are too: hand over to the backup quickly.
+  if (opts.kind === "screen" || !isNotFound(lastErr)) throw failure();
   for (const model of await discoverFlashModels()) {
     if (tried.has(model)) continue;
     const result = await tryModel(model);

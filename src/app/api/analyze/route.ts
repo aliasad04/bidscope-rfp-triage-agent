@@ -2,7 +2,7 @@ import { analyzeRfp, validateInput, type AnalyzeInput, type ProgressEvent } from
 import { extractPages } from "@/lib/pdf-text";
 
 export const runtime = "nodejs";
-export const maxDuration = 150;
+export const maxDuration = 300; // Vercel Hobby maximum; only used when Gemini is down and the backup runs
 
 const MAX_PDF_BYTES = 4 * 1024 * 1024; // the host rejects request bodies above ~4.5 MB
 

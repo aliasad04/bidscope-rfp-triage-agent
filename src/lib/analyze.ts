@@ -90,7 +90,7 @@ export async function analyzeRfp(input: AnalyzeInput, onEvent: (e: ProgressEvent
     system: SYSTEM_PROMPT,
     prompt: buildUserPrompt(docText, profile, today),
     jsonSchema: analysisJsonSchema,
-    timeoutMs: 110_000, // Gemini gets 75s of this when the Mistral backup is configured
+    timeoutMs: 270_000, // Gemini gets 150s of this when a backup provider is configured
   });
   const analysis: Analysis = parseModelJson(text, AnalysisSchema, "report");
   await screenTask;
